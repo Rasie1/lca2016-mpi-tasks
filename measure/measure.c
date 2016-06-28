@@ -4,8 +4,8 @@
 #include <mpi.h>
 
 #define TEST_RUNS 100
-#define TEST_TIME 3
-#define BUFFER_SIZE 1000000000
+#define TEST_TIME 0.4
+#define BUFFER_SIZE 100000
 
 void process0();
 void process1();
@@ -91,7 +91,8 @@ void process0()
     // Measure channel capacity
     printf("Measuring channel capacity...\n");
     double t = MPI_Wtime() + TEST_TIME;
-    while (MPI_Wtime() <  t)
+    double dataSent = 0;
+    while (MPI_Wtime() < t)
     {
         MPI_Send(out_buf,
                  BUFFER_SIZE,
@@ -99,6 +100,7 @@ void process0()
                  1,
                  0,
                  MPI_COMM_WORLD);
+        dataSent += BUFFER_SIZE;
     }
 
     // End flag
@@ -110,7 +112,7 @@ void process0()
              0,
              MPI_COMM_WORLD);
 
-    printf("Capacity: %f\n", t / (double)TEST_TIME); 
+    printf("Capacity: %f\n", dataSent / (double)TEST_TIME); 
 }
 
 void process1()
