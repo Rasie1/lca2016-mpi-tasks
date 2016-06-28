@@ -4,7 +4,7 @@
 #include <mpi.h>
 
 #define MASTER 0
-#define n 1000000
+#define n 10000000
 #define TEST_RUNS 10
 
 double sum(double *xs, int size)
@@ -19,24 +19,24 @@ double sum(double *xs, int size)
 
 void reduce_test(int world_rank, int world_size)
 {
+    if (world_rank == MASTER)
+        printf("Measuring reduce...\n");
+
     double time = 0.0;
     for (int test_run = 0; test_run < TEST_RUNS; ++test_run)
     {
         double *a_master, *a_child, *results, sum;
         int chunk_size = n / world_size;
         double t1;
+        a_child = (double*)malloc(chunk_size * sizeof(double));
         if (world_rank == MASTER)
         {
-            t1 = MPI_Wtime();
             a_master = (double*)malloc(n * sizeof(double));
             for (int i = 0; i < n; ++i)
                 a_master[i] = 1.0;
+            results = (double*)malloc(chunk_size * sizeof(double));
+            t1 = MPI_Wtime();
         }
-        // else
-        // {
-            a_child = (double*)malloc(chunk_size * sizeof(double));
-        // }    
-        results = (double*)malloc(chunk_size * sizeof(double));
 
         MPI_Scatter(a_master, 
                     chunk_size, 
@@ -55,12 +55,19 @@ void reduce_test(int world_rank, int world_size)
                    MASTER, 
                    MPI_COMM_WORLD);
 
+
         if (world_rank == MASTER)
         {
             sum = 0.0;
             for (int i = 0; i < chunk_size; i++)
-               sum += results[i];
+            {
+                sum += results[i];
+            }
+            // printf("%f\n", sum);
             time += MPI_Wtime() - t1;
+
+            free(a_master);
+            free(results);
         }
 
     }
