@@ -143,8 +143,6 @@ int main()
 
     topologies(world_rank, world_size);
 
-
-
     MPI_Finalize();
 
 }
