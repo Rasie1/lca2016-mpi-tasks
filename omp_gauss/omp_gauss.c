@@ -25,9 +25,9 @@ double *X;
 
 int main(int argc,char **argv){
     int matrix_size_iter;
-    for (matrix_size_iter = 2000; 
-         matrix_size_iter <= 7000; 
-         matrix_size_iter += 1000) 
+    for (matrix_size_iter = 200; 
+         matrix_size_iter <= 700; 
+         matrix_size_iter += 100) 
     {
         int threads_num_iter;
         for (threads_num_iter = 1;  
